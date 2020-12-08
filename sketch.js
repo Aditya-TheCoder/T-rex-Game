@@ -1,6 +1,9 @@
 var PLAY = 1;
 var END = 0;
 var gameState = PLAY;
+var score = 0;
+var message;
+var highestScore = score;
 
 var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
@@ -8,7 +11,7 @@ var ground, invisibleGround, groundImage;
 var cloudsGroup, cloudImage;
 var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
 
-var score;
+
 
 var gameOverImg,restartImg
 var jumpSound , checkPointSound, dieSound
@@ -40,6 +43,9 @@ function preload(){
 function setup() {
   createCanvas(600, 200);
   
+   message = "This is Trex game"; 
+  
+  
   trex = createSprite(50,180,20,50);
   trex.addAnimation("running", trex_running);
   trex.addAnimation("collided" ,trex_collided);
@@ -65,10 +71,10 @@ function setup() {
   obstaclesGroup = createGroup();
   cloudsGroup = createGroup();
   
-  console.log("Hello" + 5);
+  //console.log("Hello" + 5);
   
   trex.setCollider("circle",0,0,40);
-  trex.debug = true
+  trex.debug = false
   
   score = 0;
   
@@ -78,9 +84,13 @@ function draw() {
   
   background(180);
   //displaying score
-  text("Score: "+ score, 500,50);
+  text("By Aditya S. Pradhan" , 50,50);
+  text("Score :  "+ score, 500,50);
+  text("High Score : "+highestScore,490,30)
   
-  console.log("this is ",gameState)
+  //console.log(message);
+  
+  //console.log("this is ",gameState)
   
   
   if(gameState === PLAY){
@@ -90,6 +100,7 @@ function draw() {
     ground.velocityX = -4;
     //scoring
     score = score + Math.round(frameCount/60);
+    trex.changeAnimation("running",trex_running);
     
     if (ground.x < 0){
       ground.x = ground.width/2;
@@ -112,14 +123,20 @@ function draw() {
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
     }
+    
   }
    else if (gameState === END) {
-     console.log("hey")
+     //console.log("hey")
       gameOver.visible = true;
       restart.visible = true;
      
       ground.velocityX = 0;
       trex.velocityY = 0
+     
+     if(mousePressedOver(restart)){
+       reset();
+       
+     }
      
       //change the trex animation
       trex.changeAnimation("collided", trex_collided);
@@ -139,6 +156,17 @@ function draw() {
   
   
   drawSprites();
+}
+function reset(){
+  gameState = PLAY;
+  obstaclesGroup.destroyEach();
+  cloudsGroup.destroyEach();
+  if(score > highestScore){
+  highestScore = score;  
+  }
+  
+  
+  score = 0;
 }
 
 function spawnObstacles(){
@@ -193,4 +221,5 @@ function spawnClouds() {
    cloudsGroup.add(cloud);
     }
 }
+
 
